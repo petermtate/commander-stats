@@ -16,3 +16,17 @@ npm run fetch:mtgjson [-- --dataset all-printings]
 npm run trim:mtgjson [-- --commander-only]
 ```
 Outputs land in `data/mtgjson/` and are gitignored. Use the trimmed JSON for quicker local analysis.
+
+## Development
+
+```
+npm run dev
+```
+
+## Validation
+
+```
+npm run lint
+npm run typecheck
+npm run validate:analysis
+```
