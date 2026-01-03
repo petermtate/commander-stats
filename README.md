@@ -27,6 +27,7 @@ npm run dev
 
 ```
 npm run lint
+npm run test:run
 npm run typecheck
 npm run validate:analysis
 ```
