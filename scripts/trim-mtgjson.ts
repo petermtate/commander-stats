@@ -109,10 +109,10 @@ async function readMeta(inputPath: string): Promise<Record<string, unknown>> {
     const pipeline = chain([createReadStream(inputPath), parser(), streamObject()]);
     let resolved = false;
 
-    pipeline.on("data", ({ key, value }) => {
-      if (key === "meta") {
+    pipeline.on("data", (data: { key: string; value: unknown }) => {
+      if (data.key === "meta") {
         resolved = true;
-        resolve(value as Record<string, unknown>);
+        resolve(data.value as Record<string, unknown>);
         pipeline.destroy();
       }
     });
@@ -146,11 +146,11 @@ async function trimAtomic(opts: TrimOptions, sourceMeta: Record<string, unknown>
   let kept = 0;
 
   await new Promise<void>((resolve, reject) => {
-    dataStream.on("data", ({ key, value }) => {
-      const selected = selectVariant(value as AtomicCard[], commanderOnly);
+    dataStream.on("data", (data: { key: string; value: unknown }) => {
+      const selected = selectVariant(data.value as AtomicCard[], commanderOnly);
       if (!selected) return;
 
-      const trimmed = trimCard(key as string, selected);
+      const trimmed = trimCard(data.key as string, selected);
       if (!first) {
         writeStream.write(",\n");
       }
@@ -165,7 +165,7 @@ async function trimAtomic(opts: TrimOptions, sourceMeta: Record<string, unknown>
       resolve();
     });
 
-    dataStream.on("error", (err) => {
+    dataStream.on("error", (err: unknown) => {
       writeStream.destroy();
       reject(err);
     });

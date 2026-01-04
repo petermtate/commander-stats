@@ -14,6 +14,24 @@ type CardIndex = Map<string, TrimmedCard>;
 
 let cachedIndex: CardIndex | null = null;
 
+export type DeckAnalysisCard = {
+  name: string;
+  count: number;
+  manaValue: number | null;
+  typeLine: string | null;
+  types: string[] | null;
+  colorIdentity: string[];
+};
+
+export type DeckAnalysis = {
+  totalCards: number;
+  avgCmc: number | null;
+  colors: string[];
+  commander: string | null;
+  source: "trimmed-mtgjson" | "stub";
+  cards: DeckAnalysisCard[];
+};
+
 export function parseDecklist(text: string) {
   return text
     .split("\n")
@@ -45,7 +63,7 @@ export function loadCardIndex(datasetPath = "data/mtgjson/atomic-trimmed.json"):
   }
 }
 
-export function analyzeDecklist(text: string) {
+export function analyzeDecklist(text: string): DeckAnalysis {
   const list = parseDecklist(text);
   const index = loadCardIndex();
 
@@ -55,6 +73,7 @@ export function analyzeDecklist(text: string) {
   let cmcCount = 0;
   let commanderCandidate: TrimmedCard | null = null;
   const colors = new Set<string>();
+  const cards: DeckAnalysisCard[] = [];
 
   for (const entry of list) {
     const data = index?.get(entry.name.toLowerCase());
@@ -68,6 +87,14 @@ export function analyzeDecklist(text: string) {
     if (!commanderCandidate && (data?.type?.includes("Legendary Creature") || data?.types?.includes("Legendary"))) {
       commanderCandidate = data;
     }
+    cards.push({
+      name: entry.name,
+      count: entry.count,
+      manaValue: data?.manaValue ?? null,
+      typeLine: data?.type ?? (data?.types ? data.types.join(" ") : null),
+      types: data?.types ?? null,
+      colorIdentity: data?.colorIdentity ?? [],
+    });
   }
 
   const avgCmc = cmcCount > 0 ? Number((cmcSum / cmcCount).toFixed(2)) : null;
@@ -76,7 +103,8 @@ export function analyzeDecklist(text: string) {
     totalCards,
     avgCmc,
     colors: Array.from(colors),
-    commander: commanderCandidate?.name,
+    commander: commanderCandidate?.name ?? null,
     source: index ? "trimmed-mtgjson" : "stub",
+    cards,
   };
 }
