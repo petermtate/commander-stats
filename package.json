@@ -8,13 +8,16 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint \"app/**/*.{ts,tsx}\"",
+    "test": "vitest",
+    "test:run": "vitest run",
     "typecheck": "tsc --noEmit",
     "fetch:mtgjson": "tsx scripts/fetch-mtgjson.ts",
     "trim:mtgjson": "tsx scripts/trim-mtgjson.ts",
-    "validate:analysis": "tsx scripts/validate-analysis.ts"
+    "validate:analysis": "vitest run lib/__tests__/validate-analysis.test.ts"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.3",
+    "@playwright/test": "^1.57.0",
     "@types/node": "^20.10.0",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
@@ -23,7 +26,8 @@
     "eslint": "^9.39.2",
     "eslint-config-next": "^16.1.1",
     "tsx": "^4.7.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "vitest": "^4.0.16"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
